@@ -9,7 +9,7 @@ struct WelcomeScreen: View {
     @State private var Weight: String = ""
     @State private var Gender: String = "Male"
     @State private var IsAppScreenActive: Bool = false
-    @State private var ShowPopover: Bool = false
+    @State private var ShowError: Bool = false
     @State private var scrollViewProxy: ScrollViewProxy? = nil
 
     var areFieldsFilled: Bool {
@@ -70,12 +70,12 @@ struct WelcomeScreen: View {
                                   IsAppScreenActive = true
                                 }
                               } else {
-                                ShowPopover = true
+                                ShowError = true
                               }
                             }
                           )
-                          .alert("Error", isPresented: $ShowPopover) {
-                            Button("OK", role: .cancel) { ShowPopover = false }
+                          .alert("Error", isPresented: $ShowError) {
+                            Button("OK", role: .cancel) { ShowError = false }
                           } message: {
                             Text("Please fill in all fields before continuing.")
                           }
@@ -109,14 +109,13 @@ struct WelcomeScreen: View {
                     Weight = userData.weight
                     Gender = userData.gender
                     if areFieldsFilled {
-                        withAnimation {
+                      withAnimation(.easeInOut(duration:1.0)) {
                             IsAppScreenActive = true
                         }
                     }
                 }
             }
         }
-        .transition(.opacity)
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
