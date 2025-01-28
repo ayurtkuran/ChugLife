@@ -1,0 +1,15 @@
+{
+  "originHash" : "e365c8f0223957051b36931d2bcd8068eb4784d917b864eafc8fd22fb3c23f26",
+  "pins" : [
+    {
+      "identity" : "swiftuiglass",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/14slash12/SwiftUIGlass",
+      "state" : {
+        "branch" : "main",
+        "revision" : "18b12b28b959a3b1b9abd341005d37e58252c5ea"
+      }
+    }
+  ],
+  "version" : 3
+}

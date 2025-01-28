@@ -1,9 +1,3 @@
-//
-//  ChugLifeApp.swift
-//  ChugLife
-//
-//  Created by Arda Yurtkuran on 27.01.2025.
-//
 
 import SwiftUI
 
@@ -11,7 +5,7 @@ import SwiftUI
 struct ChugLifeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+          WelcomeScreen()
         }
     }
 }

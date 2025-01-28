@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		477F709F2D48327F007FBA98 /* SwiftUIGlass in Frameworks */ = {isa = PBXBuildFile; productRef = 477F709E2D48327F007FBA98 /* SwiftUIGlass */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		477F70092D47A36C007FBA98 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				477F709F2D48327F007FBA98 /* SwiftUIGlass in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = ChugLife;
 			packageProductDependencies = (
+				477F709E2D48327F007FBA98 /* SwiftUIGlass */,
 			);
 			productName = ChugLife;
 			productReference = 477F6FF82D47A36B007FBA98 /* ChugLife.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 477F6FEF2D47A36B007FBA98;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				477F709D2D48327F007FBA98 /* XCRemoteSwiftPackageReference "SwiftUIGlass" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 477F6FF92D47A36B007FBA98 /* Products */;
 			projectDirPath = "";
@@ -404,6 +413,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -433,6 +443,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -558,6 +569,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		477F709D2D48327F007FBA98 /* XCRemoteSwiftPackageReference "SwiftUIGlass" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/14slash12/SwiftUIGlass";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		477F709E2D48327F007FBA98 /* SwiftUIGlass */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 477F709D2D48327F007FBA98 /* XCRemoteSwiftPackageReference "SwiftUIGlass" */;
+			productName = SwiftUIGlass;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 477F6FF02D47A36B007FBA98 /* Project object */;
 }
