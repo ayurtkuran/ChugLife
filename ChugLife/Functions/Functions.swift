@@ -1,5 +1,4 @@
 import SwiftUI
-
 // MARK: - UserDefaults Functions
 
 func saveUserData(name: String, surname: String, age: String, weight: String, gender: String) {
@@ -31,5 +30,5 @@ func deleteUserData() {
 
 func calculateDailyWaterNeed(weight: String, gender: String) -> Double {
     guard let weightDouble = Double(weight) else { return 0 }
-    return gender == "Male" ? weightDouble * 35 : weightDouble * 31
+    return (gender == "Male") ? (weightDouble * 35) : (weightDouble * 31)
 }
