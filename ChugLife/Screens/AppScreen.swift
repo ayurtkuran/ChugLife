@@ -51,12 +51,13 @@ struct AppScreen: View {
                             .offset(y: isKeyboardVisible ? -keyboardHeight / 2 : 0)
                             .animation(.easeInOut(duration: 0.5), value: isKeyboardVisible)
 
-                        Text("Welcome back")
+                        Text("Welcome Back")
                             .font(.title3)
                             .fontWeight(.bold)
                             .foregroundColor(Color.textField)
 
                         Text("\(name) \(surname)")
+                        .textCase(.uppercase)
                             .font(.headline)
                             .fontWeight(.medium)
                             .foregroundColor(Color.textField)
