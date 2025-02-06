@@ -52,15 +52,15 @@ struct AppScreen: View {
                             .animation(.easeInOut(duration: 0.5), value: isKeyboardVisible)
 
                         Text("Welcome Back")
-                            .font(.title3)
+                        .font(.title2)
                             .fontWeight(.bold)
                             .foregroundColor(Color.textField)
 
                         Text("\(name) \(surname)")
                         .textCase(.uppercase)
-                            .font(.headline)
-                            .fontWeight(.medium)
-                            .foregroundColor(Color.textField)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(Color.textField)
 
                         Text("Your Daily Water Goal: \(Int(targetWater)) ml")
                             .font(.headline)
