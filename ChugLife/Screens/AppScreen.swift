@@ -14,13 +14,15 @@ struct AppScreen: View {
         GlassTypes(name: "LargeGlass(600ml)💧💧💧", amount: 600),
     ]
 
-    // consumedWater başlarken UserDefaults değerini okur.
     @State private var consumedWater: Double = UserDefaults.standard.double(forKey: "ConsumedWater")
     @State private var targetWater: Double = 0
     @State private var QuitFunction: Bool = false
     @State private var showDropdown: Bool = false
     @State private var customAmount: String = ""
     @State private var showError: Bool = false
+    @State private var keyboardHeight: CGFloat = 0
+    @State private var isKeyboardVisible: Bool = false
+    @State private var editScreen: Bool = false
 
     var areFieldsFilled: Bool {
         !customAmount.isEmpty
@@ -29,12 +31,15 @@ struct AppScreen: View {
     var body: some View {
         ZStack {
             if QuitFunction {
-                // Burada WelcomeScreen() senin başka bir dosyada olmalı.
                 WelcomeScreen()
+                    .transition(.opacity)
                     .animation(.easeInOut(duration: 0.5), value: QuitFunction)
+            } else if editScreen {
+                EditScreen()
+                    .transition(.opacity)
+                    .animation(.easeInOut(duration: 0.5), value: editScreen)
             } else {
                 ZStack {
-                    // GlassBackground() da başka bir dosyada/struct’ta
                     GlassBackground()
                         .edgesIgnoringSafeArea(.all)
 
@@ -43,8 +48,10 @@ struct AppScreen: View {
                             .font(.system(size: 50, weight: .black, design: .rounded))
                             .foregroundColor(Color.textField.opacity(0.8))
                             .padding(.top, 40)
+                            .offset(y: isKeyboardVisible ? -keyboardHeight / 2 : 0)
+                            .animation(.easeInOut(duration: 0.5), value: isKeyboardVisible)
 
-                        Text("Welcome back,")
+                        Text("Welcome back")
                             .font(.title3)
                             .fontWeight(.bold)
                             .foregroundColor(Color.textField)
@@ -54,7 +61,7 @@ struct AppScreen: View {
                             .fontWeight(.medium)
                             .foregroundColor(Color.textField)
 
-                        Text("Daily Water Goal: \(Int(targetWater)) ml")
+                        Text("Your Daily Water Goal: \(Int(targetWater)) ml")
                             .font(.headline)
                             .foregroundColor(Color.textField.opacity(0.8))
 
@@ -66,27 +73,25 @@ struct AppScreen: View {
                             .font(.headline)
                             .foregroundColor(Color.textField.opacity(0.8))
 
-                        // CustomButton yine senin projendeki özel bir View
                         CustomButton(title: "Add Water", width: 300, height: 40, hoverEffect: true) {
-                            withAnimation {
+                            withAnimation(.easeInOut(duration: 0.5)) {
                                 showDropdown.toggle()
                             }
                         }
                         .background(Color.buttonBackground)
                         .foregroundColor(Color.buttonText)
-                        .cornerRadius(10)
+                        .cornerRadius(15)
 
                         if showDropdown {
                             VStack(spacing: 10) {
                                 ForEach(glasses, id: \.name) { glass in
                                     CustomButton(title: glass.name, width: 300, height: 40, hoverEffect: true) {
-                                        withAnimation {
-                                            // Her su eklendiğinde consumedWater güncellenir ve UserDefaults’a kaydedilir
+                                        withAnimation(.easeInOut(duration: 0.5)) {
                                             consumedWater += Double(glass.amount)
                                             UserDefaults.standard.set(consumedWater, forKey: "ConsumedWater")
                                         }
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                            withAnimation {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                            withAnimation(.easeInOut(duration: 0.5)) {
                                                 showDropdown = false
                                             }
                                         }
@@ -97,21 +102,20 @@ struct AppScreen: View {
                                 }
 
                                 HStack(spacing: 10) {
-                                    // CustomTextField da senin özel bileşenin
                                     CustomTextField(placeholder: "Enter Custom Value", text: $customAmount, width: 200, height: 40)
+                                        .keyboardType(.numberPad)
 
                                     CustomButton(title: "Add", width: 80, height: 40, hoverEffect: true) {
                                         if areFieldsFilled {
                                             if let amount = Double(customAmount) {
-                                                withAnimation {
+                                                withAnimation(.easeInOut(duration: 0.5)) {
                                                     consumedWater += amount
-                                                    // Kaydet
                                                     UserDefaults.standard.set(consumedWater, forKey: "ConsumedWater")
                                                     customAmount = ""
                                                 }
                                             }
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                                withAnimation {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                                withAnimation(.easeInOut(duration: 0.5)) {
                                                     showDropdown = false
                                                 }
                                             }
@@ -126,13 +130,22 @@ struct AppScreen: View {
                                 .padding(.horizontal, 10)
                             }
                             .transition(.opacity)
-                            .animation(.easeInOut(duration: 0.3), value: showDropdown)
+                            .animation(.easeInOut(duration: 0.5), value: showDropdown)
                             .padding(.horizontal, 20)
                         }
 
+                        // DÜZELTİLMİŞ: "Edit Information" butonuna da aynı stil uygulanıyor
+                        CustomButton(title: "Edit Information", width: 300, height: 40, hoverEffect: true) {
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                editScreen.toggle()
+                            }
+                        }
+                        .background(Color.buttonBackground)
+                        .foregroundColor(Color.buttonText)
+                        .cornerRadius(15)
+
                         CustomButton(title: "Quit", width: 300, height: 40, hoverEffect: true) {
-                            withAnimation(.easeInOut(duration: 1.0)) {
-                                // Kullanıcı verilerini ve su miktarını sıfırla
+                            withAnimation(.easeInOut(duration: 0.5)) {
                                 deleteUserData()
                                 UserDefaults.standard.set(0, forKey: "ConsumedWater")
                                 consumedWater = 0
@@ -142,16 +155,27 @@ struct AppScreen: View {
                         }
                         .background(Color.buttonBackground)
                         .foregroundColor(Color.buttonText)
-                        .cornerRadius(10)
+                        .cornerRadius(15)
                     }
                     .padding(.horizontal, 20)
                 }
-                .animation(.easeInOut(duration: 1.0), value: QuitFunction)
+                .animation(.easeInOut(duration: 0.5), value: QuitFunction)
             }
         }
         .onAppear {
-            // Hedef su miktarını hesapla
             targetWater = calculateDailyWaterNeed(weight: weight, gender: gender)
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
+                guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+                keyboardHeight = keyboardFrame.height
+                isKeyboardVisible = true
+            }
+            NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+                isKeyboardVisible = false
+            }
+        }
+        .onDisappear {
+            NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+            NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
         }
         .alert("Error", isPresented: $showError) {
             Button("OK", role: .cancel) { showError = false }
@@ -160,4 +184,3 @@ struct AppScreen: View {
         }
     }
 }
-

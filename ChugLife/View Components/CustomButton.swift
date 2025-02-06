@@ -16,7 +16,7 @@ struct CustomButton: View {
                 .frame(width: width, height: height)
                 .foregroundColor(foregroundColor)
                 .background(backgroundColor)
-                .cornerRadius(20)
+                .cornerRadius(15)
         }
         .buttonStyle(PlainButtonStyle())
     }
