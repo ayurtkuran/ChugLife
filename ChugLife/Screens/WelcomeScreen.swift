@@ -5,15 +5,16 @@ import SwiftUIGlass
 struct WelcomeScreen: View {
     @State private var Name: String = ""
     @State private var Surname: String = ""
-    @State private var Age: String = ""
+    @State private var BirthDate: Date? = nil // Optional<Date> olarak başlatıldı
     @State private var Weight: String = ""
     @State private var Gender: String = "Male"
     @State private var IsAppScreenActive: Bool = false
     @State private var ShowError: Bool = false
     @State private var scrollViewProxy: ScrollViewProxy? = nil
+    @State private var showDatePicker: Bool = false // DatePicker'i göstermek için
 
     var areFieldsFilled: Bool {
-        !Name.isEmpty && !Surname.isEmpty && !Age.isEmpty && !Weight.isEmpty
+        !Name.isEmpty && !Surname.isEmpty && !Weight.isEmpty && BirthDate != nil // BirthDate'nin dolu olup olmadığını kontrol et
     }
 
     var body: some View {
@@ -22,7 +23,7 @@ struct WelcomeScreen: View {
                 .edgesIgnoringSafeArea(.all)
 
             if IsAppScreenActive {
-                AppScreen(name: Name, surname: Surname, age: Age, weight: Weight, gender: Gender)
+                AppScreen(name: Name, surname: Surname, birthDate: BirthDate!, weight: Weight, gender: Gender)
                     .transition(.opacity)
                     .animation(.easeInOut(duration: 0.5), value: IsAppScreenActive)
             } else {
@@ -43,10 +44,45 @@ struct WelcomeScreen: View {
                                 .padding(.bottom, 10)
                                 .id("SurnameField")
 
-                            CustomTextField(placeholder: "Age", text: $Age, width: 300, height: 40)
-                                .padding(.bottom, 10)
-                                .keyboardType(.decimalPad)
-                                .id("AgeField")
+                            // Özelleştirilmiş tarih seçimi butonu
+                            CustomDateButton(
+                                placeholder: "Birth Date",
+                                date: $BirthDate,
+                                width: 300,
+                                height: 40,
+                                action: {
+                                    withAnimation {
+                                        showDatePicker.toggle() // DatePicker'i aç/kapat
+                                    }
+                                }
+                            )
+                            .padding(.bottom, 10)
+                            .id("BirthdayField")
+
+                            // DatePicker modal
+                            if showDatePicker {
+                                VStack {
+                                    DatePicker(
+                                        "",
+                                        selection: Binding(
+                                            get: { self.BirthDate ?? Date() }, // BirthDate nil ise Date() kullan
+                                            set: { self.BirthDate = $0 } // Yeni tarihi atayın
+                                        ),
+                                        displayedComponents: .date
+                                    )
+                                    .datePickerStyle(WheelDatePickerStyle())
+                                    .labelsHidden()
+                                    .padding(.horizontal, 20)
+
+                                    Button("Clear Date") {
+                                        BirthDate = nil // Tarihi temizle
+                                        showDatePicker = false // DatePicker'ı kapat
+                                    }
+                                    .padding()
+                                }
+                                .transition(.opacity)
+                                .animation(.easeInOut(duration: 0.3), value: showDatePicker)
+                            }
 
                             CustomTextField(placeholder: "Weight as Kg", text: $Weight, width: 300, height: 40)
                                 .padding(.bottom, 20)
@@ -63,7 +99,7 @@ struct WelcomeScreen: View {
                                 height: 40,
                                 action: {
                                     if areFieldsFilled {
-                                        saveUserData(name: Name, surname: Surname, age: Age, weight: Weight, gender: Gender)
+                                        saveUserData(name: Name, surname: Surname, birthDate: BirthDate!, weight: Weight, gender: Gender)
                                         withAnimation(.easeInOut(duration: 0.5)) {
                                             IsAppScreenActive = true
                                         }
@@ -85,9 +121,6 @@ struct WelcomeScreen: View {
                         .onChange(of: Surname) { _, _ in
                             scrollToFocusedField(proxy: proxy)
                         }
-                        .onChange(of: Age) { _, _ in
-                            scrollToFocusedField(proxy: proxy)
-                        }
                         .onChange(of: Weight) { _, _ in
                             scrollToFocusedField(proxy: proxy)
                         }
@@ -102,7 +135,7 @@ struct WelcomeScreen: View {
                     let userData = loadUserData()
                     Name = userData.name
                     Surname = userData.surname
-                    Age = userData.age
+                  BirthDate = userData.birthDate
                     Weight = userData.weight
                     Gender = userData.gender
                     if areFieldsFilled {
@@ -123,10 +156,18 @@ struct WelcomeScreen: View {
             proxy.scrollTo("NameField", anchor: .center)
         } else if !Surname.isEmpty {
             proxy.scrollTo("SurnameField", anchor: .center)
-        } else if !Age.isEmpty {
-            proxy.scrollTo("AgeField", anchor: .center)
         } else if !Weight.isEmpty {
             proxy.scrollTo("WeightField", anchor: .center)
         }
     }
 }
+
+
+    // Tarih formatı için yardımcı
+    private var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }
+

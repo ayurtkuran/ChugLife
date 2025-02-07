@@ -1,21 +1,21 @@
 import SwiftUI
 // MARK: - UserDefaults Functions
 
-func saveUserData(name: String, surname: String, age: String, weight: String, gender: String) {
+func saveUserData(name: String, surname: String, birthDate: Date, weight: String, gender: String) {
     UserDefaults.standard.set(name, forKey: "Name")
     UserDefaults.standard.set(surname, forKey: "Surname")
-    UserDefaults.standard.set(age, forKey: "Age")
+    UserDefaults.standard.set(birthDate, forKey: "BirthDate")
     UserDefaults.standard.set(weight, forKey: "Weight")
     UserDefaults.standard.set(gender, forKey: "Gender")
 }
 
-func loadUserData() -> (name: String, surname: String, age: String, weight: String, gender: String) {
+func loadUserData() -> (name: String, surname: String, birthDate: Date, weight: String, gender: String) {
     let name = UserDefaults.standard.string(forKey: "Name") ?? ""
     let surname = UserDefaults.standard.string(forKey: "Surname") ?? ""
-    let age = UserDefaults.standard.string(forKey: "Age") ?? ""
+    let birthDate = UserDefaults.standard.object(forKey: "BirthDate") as? Date ?? Date()
     let weight = UserDefaults.standard.string(forKey: "Weight") ?? ""
     let gender = UserDefaults.standard.string(forKey: "Gender") ?? "Male"
-    return (name, surname, age, weight, gender)
+    return (name, surname, birthDate, weight, gender)
 }
 
 func clearWaterData(_ consumedWater: Binding<Double>) {
@@ -30,6 +30,7 @@ func deleteUserData() {
     UserDefaults.standard.removeObject(forKey: "Age")
     UserDefaults.standard.removeObject(forKey: "Weight")
     UserDefaults.standard.removeObject(forKey: "Gender")
+    UserDefaults.standard.set(nil, forKey: "BirthDate")
 }
 
 // MARK: - Calculate Daily Water Need
