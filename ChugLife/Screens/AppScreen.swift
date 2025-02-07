@@ -9,20 +9,22 @@ struct AppScreen: View {
     var gender: String
 
     let glasses: [GlassTypes] = [
-        GlassTypes(name: "SmallGlass(200ml)💧", amount: 200),
-        GlassTypes(name: "MediumGlass(400ml)💧💧", amount: 400),
-        GlassTypes(name: "LargeGlass(600ml)💧💧💧", amount: 600),
+        GlassTypes(name: "Small Bottle (500ml)", amount: 500),
+        GlassTypes(name: "Medium Bottle (1L)", amount: 1000),
+        GlassTypes(name: "Large Bottle (1.5L)", amount: 1500),
     ]
 
     @State private var consumedWater: Double = UserDefaults.standard.double(forKey: "ConsumedWater")
     @State private var targetWater: Double = 0
-    @State private var QuitFunction: Bool = false
+    @State var quitFunction: Bool = false
     @State private var showDropdown: Bool = false
     @State private var customAmount: String = ""
     @State private var showError: Bool = false
     @State private var keyboardHeight: CGFloat = 0
     @State private var isKeyboardVisible: Bool = false
     @State private var editScreen: Bool = false
+    @State private var clearAlert: Bool = false
+    @State private var showOptions: Bool = false
 
     var areFieldsFilled: Bool {
         !customAmount.isEmpty
@@ -30,10 +32,10 @@ struct AppScreen: View {
 
     var body: some View {
         ZStack {
-            if QuitFunction {
+            if quitFunction {
                 WelcomeScreen()
                     .transition(.opacity)
-                    .animation(.easeInOut(duration: 0.5), value: QuitFunction)
+                    .animation(.easeInOut(duration: 0.5), value: quitFunction)
             } else if editScreen {
                 EditScreen()
                     .transition(.opacity)
@@ -43,6 +45,7 @@ struct AppScreen: View {
                     GlassBackground()
                         .edgesIgnoringSafeArea(.all)
 
+                    // Main centered content without the gear button
                     VStack(spacing: 20) {
                         Text("ChugLife")
                             .font(.system(size: 50, weight: .black, design: .rounded))
@@ -52,15 +55,15 @@ struct AppScreen: View {
                             .animation(.easeInOut(duration: 0.5), value: isKeyboardVisible)
 
                         Text("Welcome Back")
-                        .font(.title2)
+                            .font(.title2)
                             .fontWeight(.bold)
                             .foregroundColor(Color.textField)
 
                         Text("\(name) \(surname)")
-                        .textCase(.uppercase)
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(Color.textField)
+                            .textCase(.uppercase)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(Color.textField)
 
                         Text("Your Daily Water Goal: \(Int(targetWater)) ml")
                             .font(.headline)
@@ -134,37 +137,43 @@ struct AppScreen: View {
                             .animation(.easeInOut(duration: 0.5), value: showDropdown)
                             .padding(.horizontal, 20)
                         }
-
-                        // DÜZELTİLMİŞ: "Edit Information" butonuna da aynı stil uygulanıyor
-                        CustomButton(title: "Edit Information", width: 300, height: 40, hoverEffect: true) {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                editScreen.toggle()
-                            }
-                        }
-                        .background(Color.buttonBackground)
-                        .foregroundColor(Color.buttonText)
-                        .cornerRadius(15)
-
-                        CustomButton(title: "Quit", width: 300, height: 40, hoverEffect: true) {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                deleteUserData()
-                                UserDefaults.standard.set(0, forKey: "ConsumedWater")
-                                consumedWater = 0
-
-                                QuitFunction.toggle()
-                            }
-                        }
-                        .background(Color.buttonBackground)
-                        .foregroundColor(Color.buttonText)
-                        .cornerRadius(15)
                     }
                     .padding(.horizontal, 20)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .animation(.easeInOut(duration: 0.5), value: quitFunction)
+
+                    // Gear button overlay aligned to top-right
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                withAnimation {
+                                    showOptions.toggle()
+                                }
+                            }, label: {
+                                Image(systemName: "gearshape.fill")
+                                    .font(.headline)
+                                    .padding()
+                            })
+                        }
+                        Spacer()
+                    }
+                    .padding(.top, 50)
+                    .padding(.trailing, 20)
                 }
-                .animation(.easeInOut(duration: 0.5), value: QuitFunction)
             }
         }
         .onAppear {
+            if isNewDayComparedToLastSavedDate() {
+                // Yeni günse, su tüketimini animasyonla sıfırla
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    consumedWater = 0
+                }
+                UserDefaults.standard.set(consumedWater, forKey: "ConsumedWater")
+                UserDefaults.standard.set(Date(), forKey: "LastResetDate")
+            }
             targetWater = calculateDailyWaterNeed(weight: weight, gender: gender)
+
             NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
                 guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
                 keyboardHeight = keyboardFrame.height
@@ -183,5 +192,20 @@ struct AppScreen: View {
         } message: {
             Text("Please fill the amount of water consumed!")
         }
+        // Options screen'in .sheet ile sunulması
+        .sheet(isPresented: $showOptions) {
+            OptionsScreen(
+                editScreen: $editScreen,
+                clearAlert: $clearAlert,
+                consumedWater: $consumedWater,
+                quitFunction: $quitFunction
+            )
+        }
+    }
+
+    /// Örnek bir "clearWaterData" fonksiyonu
+    func clearWaterData(_ consumed: Binding<Double>) {
+        consumed.wrappedValue = 0
+        UserDefaults.standard.set(consumed.wrappedValue, forKey: "ConsumedWater")
     }
 }

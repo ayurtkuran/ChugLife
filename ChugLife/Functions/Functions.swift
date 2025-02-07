@@ -18,6 +18,12 @@ func loadUserData() -> (name: String, surname: String, age: String, weight: Stri
     return (name, surname, age, weight, gender)
 }
 
+func clearWaterData(_ consumedWater: Binding<Double>) {
+    consumedWater.wrappedValue = 0
+    UserDefaults.standard.set(0, forKey: "ConsumedWater")
+}
+
+
 func deleteUserData() {
     UserDefaults.standard.removeObject(forKey: "Name")
     UserDefaults.standard.removeObject(forKey: "Surname")
@@ -31,4 +37,23 @@ func deleteUserData() {
 func calculateDailyWaterNeed(weight: String, gender: String) -> Double {
     guard let weightDouble = Double(weight) else { return 0 }
     return (gender == "Male") ? (weightDouble * 35) : (weightDouble * 31)
+}
+// MARK: - Daily Update Consumed Water
+func isNewDayComparedToLastSavedDate() -> Bool {
+    let calendar = Calendar.current
+    let now = Date()
+
+    // Kaydedilen son tarihi UserDefaults’tan çekiyoruz.
+    // Eğer yoksa çok eski bir tarih gibi düşünebiliriz.
+    let lastDate = UserDefaults.standard.object(forKey: "LastResetDate") as? Date
+                   ?? Date(timeIntervalSince1970: 0)
+
+    // 'now' ve 'lastDate'in sadece YIL, AY ve GÜN bileşenlerini alıyoruz.
+    let nowComponents = calendar.dateComponents([.year, .month, .day], from: now)
+    let lastDateComponents = calendar.dateComponents([.year, .month, .day], from: lastDate)
+
+    // Gün, ay veya yıl farklıysa "yeni gün" anlamına gelir
+    return (nowComponents.day != lastDateComponents.day ||
+            nowComponents.month != lastDateComponents.month ||
+            nowComponents.year != lastDateComponents.year)
 }

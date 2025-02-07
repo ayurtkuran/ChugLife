@@ -33,9 +33,12 @@ struct EditScreen: View {
                             .padding(.top, 40)
 
                         CustomTextField(placeholder: "Name", text: $name, width: 300, height: 40)
+                        .disabled(true)
                         CustomTextField(placeholder: "Surname", text: $surname, width: 300, height: 40)
+                        .disabled(true)
                         CustomTextField(placeholder: "Age", text: $age, width: 300, height: 40)
                             .keyboardType(.decimalPad)
+                            .disabled(true)
                         CustomTextField(placeholder: "Weight (Kg)", text: $weight, width: 300, height: 40)
                             .keyboardType(.decimalPad)
 
