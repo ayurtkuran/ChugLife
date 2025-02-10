@@ -48,11 +48,29 @@ struct AppScreen: View {
                     ScrollViewReader { proxy in
                         ScrollView {
                             VStack(spacing: 20) {
+                              HStack{
+
+                                Button(action: {
+                                    withAnimation {
+                                        showMenu.toggle()
+                                    }
+                                }, label: {
+                                    Image(systemName: "line.horizontal.3")
+                                    .font(.title)
+                                        .padding()
+                                        .foregroundColor(Color.textField)
+                                })
+                                
+                                Spacer()
+                              }
+
+
                                 Text("ChugLife")
-                                    .font(.system(size: 50, weight: .black, design: .rounded))
-                                    .foregroundColor(Color.textField.opacity(0.8))
-                                    .padding(.top, 40)
-                                    .id("Title")
+                                  .font(.system(size: 50, weight: .black, design: .rounded))
+                                  .foregroundColor(Color.textField.opacity(0.8))
+                                  .padding(.top, 40)
+                                  .id("Title")
+
 
                                 Text("Welcome Back")
                                     .font(.title2)
@@ -154,25 +172,7 @@ struct AppScreen: View {
                         }
                     }
 
-                    // Menu button overlay aligned to top-left
-                    VStack {
-                        HStack {
-                            Button(action: {
-                                withAnimation {
-                                    showMenu.toggle()
-                                }
-                            }, label: {
-                                Image(systemName: "line.horizontal.3")
-                                    .font(.headline)
-                                    .padding()
-                                    .foregroundColor(Color.textField)
-                            })
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                    .padding(.top, 50)
-                    .padding(.leading, 20)
+
                 }
             }
         }
