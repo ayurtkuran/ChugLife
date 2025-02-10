@@ -48,29 +48,25 @@ struct AppScreen: View {
                     ScrollViewReader { proxy in
                         ScrollView {
                             VStack(spacing: 20) {
-                              HStack{
-
-                                Button(action: {
-                                    withAnimation {
-                                        showMenu.toggle()
-                                    }
-                                }, label: {
-                                    Image(systemName: "line.horizontal.3")
-                                    .font(.title)
-                                        .padding()
-                                        .foregroundColor(Color.textField)
-                                })
-                                
-                                Spacer()
-                              }
-
+                                HStack {
+                                    Button(action: {
+                                        withAnimation {
+                                            showMenu.toggle()
+                                        }
+                                    }, label: {
+                                        Image(systemName: "line.horizontal.3")
+                                            .font(.title)
+                                            .padding()
+                                            .foregroundColor(Color.textField)
+                                    })
+                                    Spacer()
+                                }
 
                                 Text("ChugLife")
-                                  .font(.system(size: 50, weight: .black, design: .rounded))
-                                  .foregroundColor(Color.textField.opacity(0.8))
-                                  .padding(.top, 40)
-                                  .id("Title")
-
+                                    .font(.system(size: 50, weight: .black, design: .rounded))
+                                    .foregroundColor(Color.textField.opacity(0.8))
+                                    .padding(.top, 40)
+                                    .id("Title")
 
                                 Text("Welcome Back")
                                     .font(.title2)
@@ -87,6 +83,7 @@ struct AppScreen: View {
                                     .font(.headline)
                                     .foregroundColor(Color.textField.opacity(0.8))
 
+                                // ProgressBar'ı burada kullanın
                                 ProgressBar(progress: $consumedWater, target: $targetWater)
                                     .frame(height: 20)
                                     .padding(.horizontal, 20)
@@ -105,74 +102,68 @@ struct AppScreen: View {
                                 .cornerRadius(15)
 
                                 if showDropdown {
-                                  VStack(spacing: 10) {
-                                    HStack(alignment: .center, spacing: 10) {
-                                        // TextField ve "Add" butonu
-                                      CustomTextField(placeholder: "Enter Custom Value", text: $customAmount, width: 200, height: 40,keyboardType: .numberPad)
-                                            .id("CustomTextField")
+                                    VStack(spacing: 10) {
+                                        HStack(alignment: .center, spacing: 10) {
+                                            CustomTextField(placeholder: "Enter Custom Value", text: $customAmount, width: 200, height: 40, keyboardType: .numberPad)
+                                                .id("CustomTextField")
 
-
-                                        CustomButton(title: "Add", width: 80, height: 40, hoverEffect: true) {
-                                            if areFieldsFilled {
-                                                if let amount = Double(customAmount) {
-                                                    withAnimation(.easeInOut(duration: 0.5)) {
-                                                        consumedWater += amount
-                                                        UserDefaults.standard.set(consumedWater, forKey: "ConsumedWater")
-                                                        customAmount = ""
+                                            CustomButton(title: "Add", width: 80, height: 40, hoverEffect: true) {
+                                                if areFieldsFilled {
+                                                    if let amount = Double(customAmount) {
+                                                        withAnimation(.easeInOut(duration: 0.5)) {
+                                                            consumedWater += amount
+                                                            UserDefaults.standard.set(consumedWater, forKey: "ConsumedWater")
+                                                            customAmount = ""
+                                                        }
                                                     }
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                                        withAnimation(.easeInOut(duration: 0.5)) {
+                                                            showDropdown = false
+                                                        }
+                                                    }
+                                                } else {
+                                                    showError = true
+                                                }
+                                            }
+                                            .background(Color.buttonBackground)
+                                            .foregroundColor(Color.buttonText)
+                                            .cornerRadius(10)
+                                        }
+                                        .frame(height: 40)
+                                        .padding(.horizontal, 10)
+
+                                        ForEach(glasses, id: \.name) { glass in
+                                            CustomButton(title: glass.name, width: 300, height: 40, hoverEffect: true) {
+                                                withAnimation(.easeInOut(duration: 0.5)) {
+                                                    consumedWater += Double(glass.amount)
+                                                    UserDefaults.standard.set(consumedWater, forKey: "ConsumedWater")
                                                 }
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                                     withAnimation(.easeInOut(duration: 0.5)) {
                                                         showDropdown = false
                                                     }
                                                 }
-                                            } else {
-                                                showError = true
                                             }
+                                            .background(Color.buttonBackground)
+                                            .foregroundColor(Color.buttonText)
+                                            .cornerRadius(10)
                                         }
-                                        .background(Color.buttonBackground)
-                                        .foregroundColor(Color.buttonText)
-                                        .cornerRadius(10)
+                                        .frame(width: 300, height: 40)
                                     }
-                                    .frame(height: 40) // HStack yüksekliğini sabitle
-                                    .padding(.horizontal, 10) // Yatay padding
-
-                                    // Bardak boyutları için butonlar
-                                    ForEach(glasses, id: \.name) { glass in
-                                        CustomButton(title: glass.name, width: 300, height: 40, hoverEffect: true) {
-                                            withAnimation(.easeInOut(duration: 0.5)) {
-                                                consumedWater += Double(glass.amount)
-                                                UserDefaults.standard.set(consumedWater, forKey: "ConsumedWater")
-                                            }
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                                withAnimation(.easeInOut(duration: 0.5)) {
-                                                    showDropdown = false
-                                                }
-                                            }
-                                        }
-                                        .background(Color.buttonBackground)
-                                        .foregroundColor(Color.buttonText)
-                                        .cornerRadius(10)
-                                    }
-                                    .frame(width: 300, height: 40) // Butonların genişlik ve yüksekliğini sabitle
-                                  }
                                     .transition(.opacity)
                                     .animation(.easeInOut(duration: 0.5), value: showDropdown)
                                     .padding(.horizontal, 20)
                                 }
                             }
                             .padding(.horizontal, 20)
-                            .padding(.bottom, 40) // Bottom padding for better spacing
+                            .padding(.bottom, 40)
                         }
                     }
-
-
                 }
             }
         }
         .onAppear {
             if isNewDayComparedToLastSavedDate() {
-                // Yeni günse, su tüketimini animasyonla sıfırla
                 withAnimation(.easeInOut(duration: 0.5)) {
                     consumedWater = 0
                 }
@@ -182,11 +173,9 @@ struct AppScreen: View {
             targetWater = calculateDailyWaterNeed(weight: weight, gender: gender)
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
-            // Klavye açıldığında scrollToBottom'ı tetikle
             scrollToBottom = true
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
-            // Klavye kapandığında scrollToBottom'ı sıfırla
             scrollToBottom = false
         }
         .alert("Error", isPresented: $showError) {
@@ -194,7 +183,6 @@ struct AppScreen: View {
         } message: {
             Text("Please fill the amount of water consumed!")
         }
-        // Menu screen'in .sheet ile sunulması
         .sheet(isPresented: $showMenu) {
             OptionsScreen(
                 editScreen: $editScreen,
