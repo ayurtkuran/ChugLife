@@ -108,8 +108,7 @@ struct AppScreen: View {
                                   VStack(spacing: 10) {
                                     HStack(alignment: .center, spacing: 10) {
                                         // TextField ve "Add" butonu
-                                        CustomTextField(placeholder: "Enter Custom Value", text: $customAmount, width: 200, height: 40)
-                                            .keyboardType(.numberPad)
+                                      CustomTextField(placeholder: "Enter Custom Value", text: $customAmount, width: 200, height: 40,keyboardType: .numberPad)
                                             .id("CustomTextField")
 
 

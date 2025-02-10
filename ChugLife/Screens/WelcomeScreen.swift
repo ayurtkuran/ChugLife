@@ -73,21 +73,13 @@ struct WelcomeScreen: View {
                                     .datePickerStyle(WheelDatePickerStyle())
                                     .labelsHidden()
                                     .padding(.horizontal, 20)
-
-                                    Button("Clear Date") {
-                                        BirthDate = nil // Tarihi temizle
-                                        showDatePicker = false // DatePicker'ı kapat
-                                    }
-                                    .padding()
                                 }
                                 .transition(.opacity)
                                 .animation(.easeInOut(duration: 0.3), value: showDatePicker)
                             }
 
-                            CustomTextField(placeholder: "Weight as Kg", text: $Weight, width: 300, height: 40)
-                                .padding(.bottom, 20)
-                                .keyboardType(.decimalPad)
-                                .id("WeightField")
+                          CustomTextField(placeholder: "Weight as Kg", text: $Weight, width: 300, height: 40,keyboardType: .numberPad)
+                                .padding(.bottom, 20)                         .id("WeightField")
 
                             CustomPicker(selectedOption: $Gender, options: ["Male", "Female"])
                                 .padding(.bottom, 20)
