@@ -24,6 +24,7 @@ struct AppScreen: View {
     @State private var clearAlert: Bool = false
     @State private var showMenu: Bool = false
     @State private var scrollToBottom: Bool = false
+    @State private var showCelebrationAnimation: Bool = false // Hedefe ulaşıldığında animasyonu tetikler
 
     var areFieldsFilled: Bool {
         !customAmount.isEmpty
@@ -83,14 +84,21 @@ struct AppScreen: View {
                                     .font(.headline)
                                     .foregroundColor(Color.textField.opacity(0.8))
 
-                                // ProgressBar'ı burada kullanın
+
                                 ProgressBar(progress: $consumedWater, target: $targetWater)
                                     .frame(height: 20)
                                     .padding(.horizontal, 20)
 
-                                Text("Consumed Water: \(Int(consumedWater)) ml")
-                                    .font(.headline)
-                                    .foregroundColor(Color.textField.opacity(0.8))
+                              Text("Consumed Water: \(Int(consumedWater)) ml")
+                                  .font(.headline)
+                                  .foregroundColor(Color.textField.opacity(0.8))
+
+                              if consumedWater >= targetWater {
+                                  Text("You have reached your target! 🎉")
+                                      .font(.headline)
+                                      .foregroundColor(.textField) // Mesaj rengini yeşil yaparak dikkat çekici hale getiriyoruz
+                                      .padding(.top, 10) // Mesajın üst boşluğunu ayarlıyoruz
+                              }
 
                                 CustomButton(title: "Add Water", width: 300, height: 40, hoverEffect: true) {
                                     withAnimation(.easeInOut(duration: 0.5)) {
@@ -160,6 +168,20 @@ struct AppScreen: View {
                         }
                     }
                 }
+
+                // Hedefe ulaşıldığında kutlama animasyonunu göster
+              if showCelebrationAnimation {
+                  LottieView(filename: "Animation - 1739229267569", loopMode: .playOnce)
+                      .frame(width: 50, height: 50) // Animasyonun boyutunu küçült
+                      .onAppear {
+                          // Animasyon bittiğinde ekrandan kaldır
+                          withAnimation(.easeInOut(duration: 0.5)) { // withAnimation düzeltildi
+                              DispatchQueue.main.asyncAfter(deadline: .now() + 2) { // 1 saniye sonra animasyonu kaldır
+                                  showCelebrationAnimation = false
+                              }
+                          }
+                      }
+              }
             }
         }
         .onAppear {
@@ -171,6 +193,11 @@ struct AppScreen: View {
                 UserDefaults.standard.set(Date(), forKey: "LastResetDate")
             }
             targetWater = calculateDailyWaterNeed(weight: weight, gender: gender)
+        }
+        .onChange(of: consumedWater) { oldValue, newValue in
+            if newValue >= targetWater && !showCelebrationAnimation {
+                showCelebrationAnimation = true
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
             scrollToBottom = true

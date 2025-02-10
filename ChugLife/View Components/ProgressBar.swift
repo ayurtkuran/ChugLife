@@ -25,11 +25,11 @@ struct ProgressBar: View {
                             ),
                             height: geometry.size.height
                         )
-                        .foregroundColor(Color.progressBarFill)
+                        .foregroundColor(Color.progressBarFill.opacity(0.8))
                         .animation(.linear, value: progress)
 
                     // Lottie animasyonu
-                    LottieView(filename: "Animation - 1739227864292", loopMode: .loop, animationSpeed: 0.1) // Animasyon hızını yavaşlat
+                    LottieView(filename: "Animation - 1739227864292", loopMode: .loop, animationSpeed: 0.2) // Animasyon hızını yavaşlat
                         .frame(
                             width: min(
                                 CGFloat((self.target > 0 ? self.progress / self.target : 0) * geometry.size.width),
@@ -37,7 +37,7 @@ struct ProgressBar: View {
                             ),
                             height: geometry.size.height
                         )
-                        .scaleEffect(1.5) // Animasyonu küçültmek için
+                        .scaleEffect(2) // Animasyonu küçültmek için
                         .offset(x: -10, y: 0) // Konumunu ayarlamak için
                         .clipped()
                 }
