@@ -112,6 +112,7 @@ struct AppScreen: View {
                                             .keyboardType(.numberPad)
                                             .id("CustomTextField")
 
+
                                         CustomButton(title: "Add", width: 80, height: 40, hoverEffect: true) {
                                             if areFieldsFilled {
                                                 if let amount = Double(customAmount) {
