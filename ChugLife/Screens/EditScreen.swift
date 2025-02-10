@@ -60,8 +60,8 @@ struct EditScreen: View {
                             .cornerRadius(7)
 
                             // Weight Field
-                            CustomTextField(placeholder: "Weight (Kg)", text: $weight, width: 300, height: 40)
-                                .keyboardType(.decimalPad)
+                          CustomTextField(placeholder: "Weight (Kg)", text: $weight, width: 300, height: 40,keyboardType: .numberPad)
+
 
                             // Save Button
                             CustomButton(title: "Save", width: 300, height: 40) {
