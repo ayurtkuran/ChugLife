@@ -105,53 +105,57 @@ struct AppScreen: View {
                                 .cornerRadius(15)
 
                                 if showDropdown {
-                                    VStack(spacing: 10) {
-                                        ForEach(glasses, id: \.name) { glass in
-                                            CustomButton(title: glass.name, width: 300, height: 40, hoverEffect: true) {
-                                                withAnimation(.easeInOut(duration: 0.5)) {
-                                                    consumedWater += Double(glass.amount)
-                                                    UserDefaults.standard.set(consumedWater, forKey: "ConsumedWater")
+                                  VStack(spacing: 10) {
+                                    HStack(alignment: .center, spacing: 10) {
+                                        // TextField ve "Add" butonu
+                                        CustomTextField(placeholder: "Enter Custom Value", text: $customAmount, width: 200, height: 40)
+                                            .keyboardType(.numberPad)
+                                            .id("CustomTextField")
+
+                                        CustomButton(title: "Add", width: 80, height: 40, hoverEffect: true) {
+                                            if areFieldsFilled {
+                                                if let amount = Double(customAmount) {
+                                                    withAnimation(.easeInOut(duration: 0.5)) {
+                                                        consumedWater += amount
+                                                        UserDefaults.standard.set(consumedWater, forKey: "ConsumedWater")
+                                                        customAmount = ""
+                                                    }
                                                 }
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                                     withAnimation(.easeInOut(duration: 0.5)) {
                                                         showDropdown = false
                                                     }
                                                 }
+                                            } else {
+                                                showError = true
                                             }
-                                            .background(Color.buttonBackground)
-                                            .foregroundColor(Color.buttonText)
-                                            .cornerRadius(10)
                                         }
+                                        .background(Color.buttonBackground)
+                                        .foregroundColor(Color.buttonText)
+                                        .cornerRadius(10)
+                                    }
+                                    .frame(height: 40) // HStack yüksekliğini sabitle
+                                    .padding(.horizontal, 10) // Yatay padding
 
-                                        HStack(spacing: 10) {
-                                            CustomTextField(placeholder: "Enter Custom Value", text: $customAmount, width: 200, height: 40)
-                                                .keyboardType(.numberPad)
-                                                .id("CustomTextField") // ScrollView'da bu alana odaklanmak için
-
-                                            CustomButton(title: "Add", width: 80, height: 40, hoverEffect: true) {
-                                                if areFieldsFilled {
-                                                    if let amount = Double(customAmount) {
-                                                        withAnimation(.easeInOut(duration: 0.5)) {
-                                                            consumedWater += amount
-                                                            UserDefaults.standard.set(consumedWater, forKey: "ConsumedWater")
-                                                            customAmount = ""
-                                                        }
-                                                    }
-                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                                        withAnimation(.easeInOut(duration: 0.5)) {
-                                                            showDropdown = false
-                                                        }
-                                                    }
-                                                } else {
-                                                    showError = true
+                                    // Bardak boyutları için butonlar
+                                    ForEach(glasses, id: \.name) { glass in
+                                        CustomButton(title: glass.name, width: 300, height: 40, hoverEffect: true) {
+                                            withAnimation(.easeInOut(duration: 0.5)) {
+                                                consumedWater += Double(glass.amount)
+                                                UserDefaults.standard.set(consumedWater, forKey: "ConsumedWater")
+                                            }
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                                withAnimation(.easeInOut(duration: 0.5)) {
+                                                    showDropdown = false
                                                 }
                                             }
-                                            .background(Color.buttonBackground)
-                                            .foregroundColor(Color.buttonText)
-                                            .cornerRadius(10)
                                         }
-                                        .padding(.horizontal, 10)
+                                        .background(Color.buttonBackground)
+                                        .foregroundColor(Color.buttonText)
+                                        .cornerRadius(10)
                                     }
+                                    .frame(width: 300, height: 40) // Butonların genişlik ve yüksekliğini sabitle
+                                  }
                                     .transition(.opacity)
                                     .animation(.easeInOut(duration: 0.5), value: showDropdown)
                                     .padding(.horizontal, 20)
@@ -159,16 +163,6 @@ struct AppScreen: View {
                             }
                             .padding(.horizontal, 20)
                             .padding(.bottom, 40) // Bottom padding for better spacing
-                        }
-                        .onChange(of: scrollToBottom) { _, newValue in
-                            if newValue {
-                                // Klavye açıldıktan 0.2 saniye sonra en alta kaydır
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    withAnimation {
-                                        proxy.scrollTo("CustomTextField", anchor: .bottom)
-                                    }
-                                }
-                            }
                         }
                     }
 
