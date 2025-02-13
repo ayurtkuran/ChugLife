@@ -84,36 +84,52 @@ func checkForPermission() {
 
 func dispatchNotification() {
 
-    let hours = [9, 11, 13, 15, 17,19,21]
-
-    let title = "Time to drink"
-    let body = "Let's grab some water!"
+    let notifications: [(hour: Int, title: String, message: String)] = [
+      (9,  "Morning Drink",       "Rise and shine—time for a refreshing drink!"),
+      (11, "Late Morning Slurp",  "Thirsty yet? Grab a quick drink!"),
+      (13, "Midday Gulp",         "Keep going strong—take a moment to drink up!"),
+      (15, "Afternoon Splash",    "Stay on track—treat yourself to a drink!"),
+      (17, "Evening Sip",         "Don’t slow down—fill up your cup!"),
+      (19, "Dinner Drink",        "Pair your meal with a splash of water!"),
+      (21, "Nighttime Nudge",     "Just one more drink before winding down!"),
+      (23, "Bedtime Drip",        "A final sip for a comfy night’s rest!")
+    ]
 
     let notificationCenter = UNUserNotificationCenter.current()
      notificationCenter.removeAllPendingNotificationRequests()
 
-    for hour in hours {
-        let content = UNMutableNotificationContent()
-        content.title = title
-        content.body = body
-        content.sound = .default
+  for item in notifications {
+       let hour = item.hour
+       let title = item.title
+       let message = item.message
 
-        var dateComponents = DateComponents()
-        dateComponents.hour = hour
-        dateComponents.minute = 0
+       // 1) Bildirim içeriğini oluştur
+       let content = UNMutableNotificationContent()
+       content.title = title
+       content.body = message
+       content.sound = .default
 
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+       // 2) Hangi saatte tetikleneceğini ayarla
+       var dateComponents = DateComponents()
+       dateComponents.hour = hour
+       dateComponents.minute = 0
 
-        let identifier = "notification-\(hour)"
+       // 3) Her gün aynı saatte bildirim gelsin -> repeats: true
+       let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
 
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+       // 4) Her bildirime kendine özgü bir identifier ver
+       let identifier = "notification-\(hour)"
 
-        notificationCenter.add(request) { error in
-            if let error = error {
-                print("Bildirim eklenirken hata oluştu: \(error.localizedDescription)")
-            } else {
-                print("\(hour).00 bildirimi başarıyla eklendi.")
-            }
-        }
-    }
+       // 5) UNNotificationRequest oluştur
+       let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+       // 6) NotificationCenter'a ekle
+       notificationCenter.add(request) { error in
+           if let error = error {
+               print("Bildirim eklenirken hata oluştu: \(error.localizedDescription)")
+           } else {
+               print("Scheduled notification for \(hour):00 — \(title) | \(message)")
+           }
+       }
+   }
 }

@@ -185,6 +185,7 @@ struct AppScreen: View {
             }
         }
         .onAppear {
+          checkForPermission()
             if isNewDayComparedToLastSavedDate() {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     consumedWater = 0
