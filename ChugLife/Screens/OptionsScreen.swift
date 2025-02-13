@@ -2,71 +2,96 @@ import SwiftUI
 import SwiftUIGlass
 
 struct OptionsScreen: View {
-    // AppScreen’den Binding olarak alıyoruz.
     @Binding var editScreen: Bool
     @Binding var clearAlert: Bool
     @Binding var consumedWater: Double
     @Binding var quitFunction: Bool
 
-
-    // Bu sayfayı kapatmak (dismiss) için Environment’den bir dismiss fonksiyonu alıyoruz.
-    @Environment(\.dismiss) private var dismiss
+    // Menüyü kapatıp açmak için
+    @Binding var showMenu: Bool
 
     var body: some View {
-      VStack(alignment: .center, spacing: 20) {
-            Text("Options Screen")
-                .font(.headline)
-                .padding(.top, 20)
+        // Ana zemin
+        ZStack(alignment: .leading) {
+            // Menü arka plan rengi
+            Color(.systemGray6)
+                .edgesIgnoringSafeArea(.all)
 
-            // "Edit Information" butonu
-            CustomButton(title: "Edit Information", width: 300, height: 40, hoverEffect: true) {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    editScreen.toggle()
-                }
-                // Eğer butona basınca OptionsScreen'in kapanmasını istiyorsanız:
-                dismiss()
-            }
-            .background(Color.buttonBackground)
-            .foregroundColor(Color.buttonText)
-            .cornerRadius(15)
+            // Menü içeriği
+            VStack(alignment: .leading, spacing: 20) {
+                Text("Options Screen")
+                    .font(.headline)
+                    .padding(.top, 40)
+                    .padding(.leading, 20)
 
-            // "Clear Data" butonu
-            CustomButton(title: "Clear Data", width: 300, height: 40, hoverEffect: true) {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    clearAlert.toggle()
+                Spacer()
+
+                // "Edit Information" butonu
+                CustomButton(title: "Edit Information", width: 250, height: 40, hoverEffect: true) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        editScreen.toggle()
+                        showMenu = false
+                    }
                 }
-            }
-            .alert("Are you sure you want to clear your consumed water data?", isPresented: $clearAlert) {
-                HStack {
-                    Button("Yes") {
-                        clearWaterData($consumedWater)
-                        clearAlert = false
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            dismiss()
+                .background(Color.buttonBackground)
+                .foregroundColor(Color.buttonText)
+                .cornerRadius(15)
+                .padding(.leading, 20)
+
+                // "Clear Data" butonu
+                CustomButton(title: "Clear Data", width: 250, height: 40, hoverEffect: true) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        clearAlert.toggle()
+                    }
+                }
+                .alert("Are you sure you want to clear your consumed water data?", isPresented: $clearAlert) {
+                    HStack {
+                        Button("Yes") {
+                            clearWaterData($consumedWater)
+                            clearAlert = false
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                showMenu = false
+                            }
+                        }
+                        Button("Cancel", role: .cancel) {
+                            clearAlert = false
                         }
                     }
-                    Button("Cancel", role: .cancel) {
-                        clearAlert = false
+                }
+                .background(Color.buttonBackground)
+                .foregroundColor(Color.buttonText)
+                .cornerRadius(15)
+                .padding(.leading, 20)
+
+                // "Quit" butonu
+                CustomButton(title: "Quit", width: 250, height: 40, hoverEffect: true) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        deleteUserData()
+                        quitFunction.toggle()
+                        showMenu = false
                     }
                 }
-            }
-            .background(Color.buttonBackground)
-            .foregroundColor(Color.buttonText)
-            .cornerRadius(15)
+                .background(Color.buttonBackground)
+                .foregroundColor(Color.buttonText)
+                .cornerRadius(15)
+                .padding(.leading, 20)
 
-        CustomButton(title: "Quit", width: 300, height: 40, hoverEffect: true) {
-            withAnimation(.easeInOut(duration: 0.5)) {
-              deleteUserData()
-              quitFunction.toggle()
+                Spacer()
             }
-            // Eğer butona basınca OptionsScreen'in kapanmasını istiyorsanız:
-            dismiss()
+            .frame(width: 300, alignment: .leading) // Menü genişliği
         }
-        .background(Color.buttonBackground)
-        .foregroundColor(Color.buttonText)
-        .cornerRadius(15)
-        }
-        // Yarım ekran olarak gösterilmesi (iOS 16+)
-        .presentationDetents([.fraction(0.5)])
+        .frame(width: 300, alignment: .leading)        // Menüyü sola sabitle
+        .transition(.move(edge: .leading))            // Soldan kayarak açılma animasyonu
+        .animation(.easeInOut(duration: 0.5), value: showMenu)
+    }
+
+    // Yardımcı fonksiyonlar
+    func clearWaterData(_ consumed: Binding<Double>) {
+        consumed.wrappedValue = 0
+        UserDefaults.standard.set(consumed.wrappedValue, forKey: "ConsumedWater")
+    }
+
+    func deleteUserData() {
+        UserDefaults.standard.removeObject(forKey: "ConsumedWater")
     }
 }

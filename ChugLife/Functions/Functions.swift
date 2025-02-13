@@ -91,12 +91,12 @@ func dispatchNotification() {
       (15, "Afternoon Splash",    "Stay on track—treat yourself to a drink!"),
       (17, "Evening Sip",         "Don’t slow down—fill up your cup!"),
       (19, "Dinner Drink",        "Pair your meal with a splash of water!"),
-      (21, "Nighttime Nudge",     "Just one more drink before winding down!"),
+      (21, "Night Time Nudge",     "Just one more drink before winding down!"),
       (23, "Bedtime Drip",        "A final sip for a comfy night’s rest!")
     ]
 
     let notificationCenter = UNUserNotificationCenter.current()
-     notificationCenter.removeAllPendingNotificationRequests()
+      notificationCenter.removeAllPendingNotificationRequests()
 
   for item in notifications {
        let hour = item.hour
