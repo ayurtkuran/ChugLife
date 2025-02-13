@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 // MARK: - UserDefaults Functions
 
 func saveUserData(name: String, surname: String, birthDate: Date, weight: String, gender: String) {
@@ -57,4 +58,62 @@ func isNewDayComparedToLastSavedDate() -> Bool {
     return (nowComponents.day != lastDateComponents.day ||
             nowComponents.month != lastDateComponents.month ||
             nowComponents.year != lastDateComponents.year)
+}
+
+//MARK: - Notifications
+
+func checkForPermission() {
+    let notificationCenter = UNUserNotificationCenter.current()
+    notificationCenter.getNotificationSettings { settings in
+        switch settings.authorizationStatus {
+        case .authorized:
+            dispatchNotification()
+        case .denied:
+            return
+        case .notDetermined:
+            notificationCenter.requestAuthorization(options: [.alert, .sound]) { didAllow, error in
+                if didAllow {
+                    dispatchNotification()
+                }
+            }
+         default:
+            return
+        }
+    }
+}
+
+func dispatchNotification() {
+
+    let hours = [9, 11, 13, 15, 17,19,21]
+
+    let title = "Time to drink"
+    let body = "Let's grab some water!"
+
+    let notificationCenter = UNUserNotificationCenter.current()
+     notificationCenter.removeAllPendingNotificationRequests()
+
+    for hour in hours {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+
+        var dateComponents = DateComponents()
+        dateComponents.hour = hour
+        dateComponents.minute = 0
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+
+        let identifier = "notification-\(hour)"
+
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+        notificationCenter.add(request) { error in
+            if let error = error {
+                print("Bildirim eklenirken hata oluştu: \(error.localizedDescription)")
+            } else {
+                print("\(hour).00 bildirimi başarıyla eklendi.")
+            }
+        }
+    }
 }

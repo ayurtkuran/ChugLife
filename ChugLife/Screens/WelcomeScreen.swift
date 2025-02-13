@@ -118,6 +118,7 @@ struct WelcomeScreen: View {
                         }
                     }
                     .onAppear {
+                      checkForPermission()
                         scrollViewProxy = proxy
                     }
                 }
